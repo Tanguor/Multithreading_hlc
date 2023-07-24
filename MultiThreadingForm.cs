@@ -46,7 +46,15 @@ namespace MultiThreading
         public Label YCordLabel;
         private Label MinConfianceLabel;
         private TrackBar trackBar1;
+        private CheckBox continuousAcquisitionCheckBox;
+        private Label ipLabel;
+        private TextBox ipTextBox;
+        private TextBox portTextBox;
+        private Label portLabel;
+        private Button browseButton;
+        private MaskedTextBox directoryTextBox;
         private Label LabelID;
+
 
         public MultiThreadingForm()
         {
@@ -114,68 +122,89 @@ namespace MultiThreading
         /// </summary>
         private void InitializeComponent()
         {
-            startButton = new Button();
-            stopButton = new Button();
-            LabelPT = new Label();
-            LabelID = new Label();
-            procTimeLabel = new Label();
-            imageDataLabel = new Label();
-            CopyrightLabel = new Label();
-            WindowControl = new HSmartWindowControl();
             checkboxInputFromFile = new CheckBox();
+            imageDataLabel = new Label();
             label1 = new Label();
+            procTimeLabel = new Label();
             label2 = new Label();
+            LabelID = new Label();
             XCordLabel = new Label();
+            LabelPT = new Label();
             YCordLabel = new Label();
+            stopButton = new Button();
             MinConfianceLabel = new Label();
+            startButton = new Button();
             trackBar1 = new TrackBar();
+            WindowControl = new HSmartWindowControl();
+            continuousAcquisitionCheckBox = new CheckBox();
+            CopyrightLabel = new Label();
+            ipLabel = new Label();
+            ipTextBox = new TextBox();
+            portTextBox = new TextBox();
+            portLabel = new Label();
+            browseButton = new Button();
+            directoryTextBox = new MaskedTextBox();
             ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
             SuspendLayout();
             // 
-            // startButton
+            // checkboxInputFromFile
             // 
-            startButton.BackColor = Color.LightGreen;
-            startButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            startButton.Location = new Point(690, 11);
-            startButton.Margin = new Padding(4, 3, 4, 3);
-            startButton.Name = "startButton";
-            startButton.Size = new Size(234, 72);
-            startButton.TabIndex = 1;
-            startButton.Tag = "";
-            startButton.Text = "Start";
-            startButton.UseVisualStyleBackColor = false;
-            startButton.Click += startButton_Click;
+            checkboxInputFromFile.AutoSize = true;
+            checkboxInputFromFile.BackColor = Color.LightGray;
+            checkboxInputFromFile.Checked = true;
+            checkboxInputFromFile.CheckState = CheckState.Checked;
+            checkboxInputFromFile.Location = new Point(688, 116);
+            checkboxInputFromFile.Name = "checkboxInputFromFile";
+            checkboxInputFromFile.Size = new Size(105, 19);
+            checkboxInputFromFile.TabIndex = 32;
+            checkboxInputFromFile.Text = "Input from file ";
+            checkboxInputFromFile.UseVisualStyleBackColor = false;
+            checkboxInputFromFile.CheckedChanged += File_CheckedChanged;
             // 
-            // stopButton
+            // imageDataLabel
             // 
-            stopButton.BackColor = Color.DarkRed;
-            stopButton.Enabled = false;
-            stopButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            stopButton.ForeColor = SystemColors.ControlLightLight;
-            stopButton.Location = new Point(690, 446);
-            stopButton.Margin = new Padding(4, 3, 4, 3);
-            stopButton.Name = "stopButton";
-            stopButton.Size = new Size(234, 115);
-            stopButton.TabIndex = 2;
-            stopButton.Text = "Stop";
-            stopButton.UseVisualStyleBackColor = false;
-            stopButton.Click += stopButton_Click;
+            imageDataLabel.Location = new Point(153, 694);
+            imageDataLabel.Margin = new Padding(4, 0, 4, 0);
+            imageDataLabel.Name = "imageDataLabel";
+            imageDataLabel.Size = new Size(84, 28);
+            imageDataLabel.TabIndex = 6;
+            imageDataLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // LabelPT
+            // label1
             // 
-            LabelPT.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            LabelPT.Location = new Point(14, 580);
-            LabelPT.Margin = new Padding(4, 0, 4, 0);
-            LabelPT.Name = "LabelPT";
-            LabelPT.Size = new Size(131, 28);
-            LabelPT.TabIndex = 3;
-            LabelPT.Text = "Processing time:";
-            LabelPT.TextAlign = ContentAlignment.MiddleLeft;
+            label1.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.Location = new Point(274, 666);
+            label1.Margin = new Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new Size(104, 28);
+            label1.TabIndex = 33;
+            label1.Text = "X coordinates:";
+            label1.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // procTimeLabel
+            // 
+            procTimeLabel.Location = new Point(154, 666);
+            procTimeLabel.Margin = new Padding(4, 0, 4, 0);
+            procTimeLabel.Name = "procTimeLabel";
+            procTimeLabel.Size = new Size(84, 28);
+            procTimeLabel.TabIndex = 5;
+            procTimeLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // label2
+            // 
+            label2.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
+            label2.Location = new Point(274, 694);
+            label2.Margin = new Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(104, 28);
+            label2.TabIndex = 34;
+            label2.Text = "Y coordinates:";
+            label2.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // LabelID
             // 
             LabelID.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            LabelID.Location = new Point(14, 617);
+            LabelID.Location = new Point(24, 694);
             LabelID.Margin = new Padding(4, 0, 4, 0);
             LabelID.Name = "LabelID";
             LabelID.Size = new Size(121, 28);
@@ -183,28 +212,122 @@ namespace MultiThreading
             LabelID.Text = "Nombre de pièce";
             LabelID.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // procTimeLabel
+            // XCordLabel
             // 
-            procTimeLabel.Location = new Point(143, 580);
-            procTimeLabel.Margin = new Padding(4, 0, 4, 0);
-            procTimeLabel.Name = "procTimeLabel";
-            procTimeLabel.Size = new Size(84, 28);
-            procTimeLabel.TabIndex = 5;
-            procTimeLabel.TextAlign = ContentAlignment.MiddleLeft;
+            XCordLabel.Location = new Point(377, 667);
+            XCordLabel.Margin = new Padding(4, 0, 4, 0);
+            XCordLabel.Name = "XCordLabel";
+            XCordLabel.Size = new Size(558, 28);
+            XCordLabel.TabIndex = 35;
+            XCordLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // imageDataLabel
+            // LabelPT
             // 
-            imageDataLabel.Location = new Point(143, 617);
-            imageDataLabel.Margin = new Padding(4, 0, 4, 0);
-            imageDataLabel.Name = "imageDataLabel";
-            imageDataLabel.Size = new Size(84, 28);
-            imageDataLabel.TabIndex = 6;
-            imageDataLabel.TextAlign = ContentAlignment.MiddleLeft;
+            LabelPT.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
+            LabelPT.Location = new Point(24, 665);
+            LabelPT.Margin = new Padding(4, 0, 4, 0);
+            LabelPT.Name = "LabelPT";
+            LabelPT.Size = new Size(131, 28);
+            LabelPT.TabIndex = 3;
+            LabelPT.Text = "Processing time:";
+            LabelPT.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // YCordLabel
+            // 
+            YCordLabel.Location = new Point(377, 694);
+            YCordLabel.Margin = new Padding(4, 0, 4, 0);
+            YCordLabel.Name = "YCordLabel";
+            YCordLabel.Size = new Size(558, 28);
+            YCordLabel.TabIndex = 36;
+            YCordLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // stopButton
+            // 
+            stopButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            stopButton.BackColor = Color.DarkRed;
+            stopButton.Enabled = false;
+            stopButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
+            stopButton.ForeColor = SystemColors.ControlLightLight;
+            stopButton.Location = new Point(688, 471);
+            stopButton.Margin = new Padding(4, 3, 4, 3);
+            stopButton.Name = "stopButton";
+            stopButton.Size = new Size(276, 107);
+            stopButton.TabIndex = 2;
+            stopButton.Text = "Stop";
+            stopButton.UseVisualStyleBackColor = false;
+            stopButton.Click += stopButton_Click;
+            // 
+            // MinConfianceLabel
+            // 
+            MinConfianceLabel.Location = new Point(760, 331);
+            MinConfianceLabel.Margin = new Padding(4, 0, 4, 0);
+            MinConfianceLabel.Name = "MinConfianceLabel";
+            MinConfianceLabel.Size = new Size(117, 28);
+            MinConfianceLabel.TabIndex = 37;
+            MinConfianceLabel.Text = "Min Confiance : 0.90";
+            MinConfianceLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // startButton
+            // 
+            startButton.BackColor = Color.LightGreen;
+            startButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
+            startButton.Location = new Point(688, 11);
+            startButton.Margin = new Padding(4, 3, 4, 3);
+            startButton.Name = "startButton";
+            startButton.Size = new Size(276, 95);
+            startButton.TabIndex = 1;
+            startButton.Tag = "";
+            startButton.Text = "Start";
+            startButton.UseVisualStyleBackColor = false;
+            startButton.Click += startButton_Click;
+            // 
+            // trackBar1
+            // 
+            trackBar1.Location = new Point(686, 362);
+            trackBar1.Maximum = 100;
+            trackBar1.Minimum = 50;
+            trackBar1.Name = "trackBar1";
+            trackBar1.Size = new Size(276, 45);
+            trackBar1.TabIndex = 0;
+            trackBar1.Value = 90;
+            trackBar1.Scroll += trackBar1_Scroll;
+            // 
+            // WindowControl
+            // 
+            WindowControl.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            WindowControl.AutoValidate = AutoValidate.EnableAllowFocusChange;
+            WindowControl.HDoubleClickToFitContent = true;
+            WindowControl.HDrawingObjectsModifier = HSmartWindowControl.DrawingObjectsModifier.None;
+            WindowControl.HImagePart = new Rectangle(-327, -405, 1294, 1290);
+            WindowControl.HKeepAspectRatio = true;
+            WindowControl.HMoveContent = true;
+            WindowControl.HZoomContent = HSmartWindowControl.ZoomContent.WheelForwardZoomsIn;
+            WindowControl.Location = new Point(11, 11);
+            WindowControl.Margin = new Padding(2);
+            WindowControl.Name = "WindowControl";
+            WindowControl.Size = new Size(650, 650);
+            WindowControl.TabIndex = 31;
+            WindowControl.WindowSize = new Size(650, 650);
+            WindowControl.Load += WindowControl_Load;
+            // 
+            // continuousAcquisitionCheckBox
+            // 
+            continuousAcquisitionCheckBox.AutoSize = true;
+            continuousAcquisitionCheckBox.BackColor = Color.LightGray;
+            continuousAcquisitionCheckBox.Checked = true;
+            continuousAcquisitionCheckBox.CheckState = CheckState.Checked;
+            continuousAcquisitionCheckBox.Location = new Point(799, 116);
+            continuousAcquisitionCheckBox.Name = "continuousAcquisitionCheckBox";
+            continuousAcquisitionCheckBox.Size = new Size(163, 19);
+            continuousAcquisitionCheckBox.TabIndex = 38;
+            continuousAcquisitionCheckBox.Text = "Continuous Acquisition    ";
+            continuousAcquisitionCheckBox.UseVisualStyleBackColor = false;
+            continuousAcquisitionCheckBox.CheckedChanged += continuousAcquisitionCheckBox_CheckedChanged;
             // 
             // CopyrightLabel
             // 
             CopyrightLabel.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            CopyrightLabel.Location = new Point(246, 672);
+            CopyrightLabel.Location = new Point(257, 736);
             CopyrightLabel.Margin = new Padding(4, 0, 4, 0);
             CopyrightLabel.Name = "CopyrightLabel";
             CopyrightLabel.Size = new Size(537, 18);
@@ -213,122 +336,96 @@ namespace MultiThreading
             CopyrightLabel.TextAlign = ContentAlignment.MiddleCenter;
             CopyrightLabel.Click += CopyrightLabel_Click;
             // 
-            // WindowControl
+            // ipLabel
             // 
-            WindowControl.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            WindowControl.AutoValidate = AutoValidate.EnableAllowFocusChange;
-            WindowControl.HDoubleClickToFitContent = true;
-            WindowControl.HDrawingObjectsModifier = HSmartWindowControl.DrawingObjectsModifier.None;
-            WindowControl.HImagePart = new Rectangle(-327, -307, 1294, 1094);
-            WindowControl.HKeepAspectRatio = true;
-            WindowControl.HMoveContent = true;
-            WindowControl.HZoomContent = HSmartWindowControl.ZoomContent.WheelForwardZoomsIn;
-            WindowControl.Location = new Point(11, 11);
-            WindowControl.Margin = new Padding(2);
-            WindowControl.Name = "WindowControl";
-            WindowControl.Size = new Size(650, 550);
-            WindowControl.TabIndex = 31;
-            WindowControl.WindowSize = new Size(650, 550);
-            WindowControl.Load += WindowControl_Load;
+            ipLabel.AutoSize = true;
+            ipLabel.Location = new Point(686, 416);
+            ipLabel.Name = "ipLabel";
+            ipLabel.Size = new Size(17, 15);
+            ipLabel.TabIndex = 39;
+            ipLabel.Text = "IP";
             // 
-            // checkboxInputFromFile
+            // ipTextBox
             // 
-            checkboxInputFromFile.AutoSize = true;
-            checkboxInputFromFile.Location = new Point(754, 89);
-            checkboxInputFromFile.Name = "checkboxInputFromFile";
-            checkboxInputFromFile.Size = new Size(105, 19);
-            checkboxInputFromFile.TabIndex = 32;
-            checkboxInputFromFile.Text = "Input from file ";
-            checkboxInputFromFile.UseVisualStyleBackColor = true;
-            checkboxInputFromFile.CheckedChanged += File_CheckedChanged;
+            ipTextBox.Location = new Point(731, 413);
+            ipTextBox.Name = "ipTextBox";
+            ipTextBox.Size = new Size(231, 23);
+            ipTextBox.TabIndex = 40;
+            ipTextBox.Text = "192.168.0.2";
+            ipTextBox.TextChanged += ipTextBox_TextChanged;
             // 
-            // label1
+            // portTextBox
             // 
-            label1.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            label1.Location = new Point(264, 580);
-            label1.Margin = new Padding(4, 0, 4, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(131, 28);
-            label1.TabIndex = 33;
-            label1.Text = "X coordinates:";
-            label1.TextAlign = ContentAlignment.MiddleLeft;
+            portTextBox.Location = new Point(731, 442);
+            portTextBox.Name = "portTextBox";
+            portTextBox.Size = new Size(231, 23);
+            portTextBox.TabIndex = 42;
+            portTextBox.Text = "5016";
+            portTextBox.TextChanged += portTextBox_TextChanged;
             // 
-            // label2
+            // portLabel
             // 
-            label2.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
-            label2.Location = new Point(264, 617);
-            label2.Margin = new Padding(4, 0, 4, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(131, 28);
-            label2.TabIndex = 34;
-            label2.Text = "Y coordinates:";
-            label2.TextAlign = ContentAlignment.MiddleLeft;
+            portLabel.AutoSize = true;
+            portLabel.Location = new Point(686, 445);
+            portLabel.Name = "portLabel";
+            portLabel.Size = new Size(29, 15);
+            portLabel.TabIndex = 41;
+            portLabel.Text = "Port";
             // 
-            // XCordLabel
+            // browseButton
             // 
-            XCordLabel.Location = new Point(367, 580);
-            XCordLabel.Margin = new Padding(4, 0, 4, 0);
-            XCordLabel.Name = "XCordLabel";
-            XCordLabel.Size = new Size(558, 28);
-            XCordLabel.TabIndex = 35;
-            XCordLabel.TextAlign = ContentAlignment.MiddleLeft;
+            browseButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            browseButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            browseButton.Location = new Point(684, 197);
+            browseButton.Name = "browseButton";
+            browseButton.Size = new Size(278, 23);
+            browseButton.TabIndex = 43;
+            browseButton.Text = "Browse picture document";
+            browseButton.UseVisualStyleBackColor = true;
+            browseButton.Click += browseButton_Click;
             // 
-            // YCordLabel
+            // directoryTextBox
             // 
-            YCordLabel.Location = new Point(367, 617);
-            YCordLabel.Margin = new Padding(4, 0, 4, 0);
-            YCordLabel.Name = "YCordLabel";
-            YCordLabel.Size = new Size(558, 28);
-            YCordLabel.TabIndex = 36;
-            YCordLabel.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // MinConfianceLabel
-            // 
-            MinConfianceLabel.Location = new Point(736, 162);
-            MinConfianceLabel.Margin = new Padding(4, 0, 4, 0);
-            MinConfianceLabel.Name = "MinConfianceLabel";
-            MinConfianceLabel.Size = new Size(155, 28);
-            MinConfianceLabel.TabIndex = 37;
-            MinConfianceLabel.Text = "Min Confiance:";
-            MinConfianceLabel.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // trackBar1
-            // 
-            trackBar1.Location = new Point(690, 193);
-            trackBar1.Maximum = 100;
-            trackBar1.Minimum = 50;
-            trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(234, 45);
-            trackBar1.TabIndex = 0;
-            trackBar1.Value = 90;
-            trackBar1.Scroll += trackBar1_Scroll;
+            directoryTextBox.Location = new Point(686, 168);
+            directoryTextBox.Name = "directoryTextBox";
+            directoryTextBox.Size = new Size(276, 23);
+            directoryTextBox.TabIndex = 44;
+            directoryTextBox.Text = "C:\\\\Users\\\\tanguy.lebret\\\\Documents\\\\Image\\\\Sombre";
             // 
             // MultiThreadingForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LightSteelBlue;
-            ClientSize = new Size(956, 699);
-            Controls.Add(trackBar1);
-            Controls.Add(MinConfianceLabel);
-            Controls.Add(YCordLabel);
-            Controls.Add(XCordLabel);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(checkboxInputFromFile);
-            Controls.Add(WindowControl);
+            ClientSize = new Size(990, 763);
+            Controls.Add(directoryTextBox);
+            Controls.Add(browseButton);
+            Controls.Add(portTextBox);
+            Controls.Add(portLabel);
+            Controls.Add(ipTextBox);
+            Controls.Add(ipLabel);
             Controls.Add(CopyrightLabel);
+            Controls.Add(continuousAcquisitionCheckBox);
+            Controls.Add(WindowControl);
+            Controls.Add(checkboxInputFromFile);
+            Controls.Add(trackBar1);
             Controls.Add(imageDataLabel);
+            Controls.Add(startButton);
+            Controls.Add(label1);
+            Controls.Add(MinConfianceLabel);
             Controls.Add(procTimeLabel);
+            Controls.Add(stopButton);
+            Controls.Add(label2);
+            Controls.Add(YCordLabel);
             Controls.Add(LabelID);
             Controls.Add(LabelPT);
-            Controls.Add(stopButton);
-            Controls.Add(startButton);
+            Controls.Add(XCordLabel);
             FormBorderStyle = FormBorderStyle.Fixed3D;
             Margin = new Padding(4, 3, 4, 3);
             Name = "MultiThreadingForm";
             Text = "Performing Image Acquisition, Processing, and Display in Multiple Threads";
             FormClosing += MultiThreadingForm_FormClosing;
+            Load += MultiThreadingForm_Load;
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -372,6 +469,9 @@ namespace MultiThreading
             threadAcq.Start();  // start the threads
             threadIP.Start();
             threadCom.Start();
+            trackBar1_Scroll(e, e);
+            portTextBox_TextChanged(e, e);
+            ipTextBox_TextChanged(e, e);
         }
 
         ////////////////////////////////////////////////////////////////////////////
@@ -411,9 +511,13 @@ namespace MultiThreading
         {
 
         }
-        public bool IsCheckboxChecked()
+        public bool IsCheckboxChecked()//premiere méthode
         {
             return checkboxInputFromFile.Checked;
+        }
+        private void continuousAcquisitionCheckBox_CheckedChanged(object sender, EventArgs e)//seconde méthode.
+        {
+            workerObject.ContinuousAcquisition = continuousAcquisitionCheckBox.Checked;
         }
 
         private void CopyrightLabel_Click(object sender, EventArgs e)
@@ -434,6 +538,33 @@ namespace MultiThreading
 
             // Update the label text
             MinConfianceLabel.Text = "Min confiance :" + value.ToString("0.00"); // Format the value to show two decimal places
+        }
+
+        private void ipTextBox_TextChanged(object sender, EventArgs e)
+        {
+            workerObject.AdressIp = ipTextBox.Text;
+        }
+
+        private void portTextBox_TextChanged(object sender, EventArgs e)
+        {
+            workerObject.Port = portTextBox.Text;
+        }
+
+        private void MultiThreadingForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void browseButton_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
+            {
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    directoryTextBox.Text = dialog.SelectedPath;
+                }
+            }
+            workerObject.FileChosen = directoryTextBox.Text;
         }
     }
 

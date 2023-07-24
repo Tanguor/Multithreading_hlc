@@ -13,6 +13,8 @@ using HalconDotNet;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.Drawing;
+using Microsoft.VisualBasic.ApplicationServices;
 
 /////////////////////////////////////////////////////////////////////////////
 // Detailed information:
@@ -76,6 +78,7 @@ namespace MultiThreading
         AutoResetEvent newImgEvent;
         AutoResetEvent newResultEvent;
         AutoResetEvent newRecipeIdEvent;
+        AutoResetEvent communicationErrorEvent;
         ManualResetEvent containerIsFreeEvent;
         ManualResetEvent delegatedStopEvent;
 
@@ -89,7 +92,12 @@ namespace MultiThreading
         FuncDelegate delegateDisplay;
         FuncDelegate delegateControlReset;
         const int MAX_BUFFERS = 1;
+        public string tempRecipeId;
         public string recipeId;
+        public bool ContinuousAcquisition { get; set; } = true;
+        public string AdressIp { get; set; }
+        public string Port { get; set; }
+        public string FileChosen {get; set;}
 
 
         // Constructor: set up class members.
@@ -98,6 +106,7 @@ namespace MultiThreading
             newImgEvent = new AutoResetEvent(false);
             newResultEvent = new AutoResetEvent(false);
             newRecipeIdEvent = new AutoResetEvent(false);
+            communicationErrorEvent = new AutoResetEvent(false);
             containerIsFreeEvent = new ManualResetEvent(true);
             recipeId = null;
 
@@ -254,17 +263,34 @@ namespace MultiThreading
             // ----------- TRY CONNECTION TO CAMERA --------
             while (!cancellationTokenSource.Token.IsCancellationRequested) //Si une recette est trouvée, lance la connexion avec notre caméra
             {
-                /*if (!newRecipeIdEvent.WaitOne(TimeSpan.FromSeconds(1)))
+                if (newRecipeIdEvent.WaitOne(0))
                 {
+                    recipeId = tempRecipeId;
+                    tempRecipeId = "";
+                    newRecipeIdEvent.Reset();
                     continue;
-                }*/
+                }
+                if (communicationErrorEvent.WaitOne(0))
+                {
+                    // Handle the communication error
+                    // ...
+                }
+                newRecipeIdEvent.WaitOne();
                 try
                 {
-                    if (mainForm.IsCheckboxChecked()) // Check the state of the checkbox
+                    if (mainForm.IsCheckboxChecked()) // SI OUI LIRE DANS LE DOSSIER DE DESTINATION
                     {
                         // Get a list of all the image files in the directory
-                        string[] imageFiles = System.IO.Directory.GetFiles("C:\\Users\\tanguy.lebret\\Documents\\Image\\Sombre", "*.PNG");
-
+                        string file = null;
+                        if (FileChosen == null) {
+                            file = "C:\\Users\\tanguy.lebret\\Documents\\Image\\Sombre"; 
+                        }
+                        else
+                        {
+                            file = FileChosen;
+                        }
+                        string[] imageFiles = Directory.GetFiles(file, "*.PNG");
+                        
                         // Loop over the image files
                         foreach (string imageFile in imageFiles)
                         {
@@ -290,14 +316,12 @@ namespace MultiThreading
                             if (delegatedStopEvent.WaitOne(0, true)) break;
                         }
                     }
-
                     else
                     {
-                        // Connect to camera and grab image
+                        // -------------  CONNEXION CAMERA ----------------
                         acquisition = new HFramegrabber("GigEVision2", 0, 0, 0, 0, 0, 0, "progressive", -1, "default",
                                     -1, "false", "default", "000f315c5fde_AlliedVisionTechnologies_MakoG131B5080", 0, -1);
-
-                        while (!cancellationTokenSource.Token.IsCancellationRequested /*&& newRecipeIdEvent.WaitOne()*/)
+                        while (!cancellationTokenSource.Token.IsCancellationRequested && newRecipeIdEvent.WaitOne())
                         {
                             HImage grabbedImage = acquisition.GrabImageAsync(-1);
                             newImgMutex.WaitOne(); // CriticalSect.
@@ -328,9 +352,14 @@ namespace MultiThreading
                     // Invoke the delegate to reset the UI controls
                     mainForm.Invoke(delegateControlReset);
                 }
-            if (delegatedStopEvent.WaitOne(0, true)) break;
+                if (!ContinuousAcquisition)
+                {
+                    break;
+                }
+                if (delegatedStopEvent.WaitOne(0, true)) break;
             }
             newImgEvent.Reset();
+            newRecipeIdEvent.Reset();
             return;  // Exit the method
         }
 
@@ -350,7 +379,7 @@ namespace MultiThreading
             HTuple hv_DLModelHandle,min_confidence;
             HOperatorSet.ReadDlModel("C:\\Users\\tanguy.lebret\\Documents\\model_LR_opt.hdl", out hv_DLModelHandle);
             HTuple HomMat2D = new HTuple(new double[] { 0.0141965, 0.218402, -495.553, -0.216524, 0.0145446, 99.0114, 0, 0, 1 });
-            HTuple X, Y, rows = new HTuple(), cols = new HTuple();
+            HTuple X, Y, hv_phi, rows = new HTuple(), cols = new HTuple();
 
             // Load the preprocessing parameters
             HTuple hv_DLPreprocessParam; HObject preprocessedImage;
@@ -385,13 +414,44 @@ namespace MultiThreading
                 // Apply the deep learning model to the image
                 HTuple DLResultBatch;
                 HOperatorSet.ApplyDlModel(hv_DLModelHandle, sample, new HTuple(), out DLResultBatch);
-
                 HTuple t2 = HSystem.CountSeconds();
-                // -----------  SAVE PARAMETER  ---------------
+
+                // ---------  CONVERT COORDINATES -------------
                 HOperatorSet.GetDictTuple(DLResultBatch, "bbox_row", out rows);
                 HOperatorSet.GetDictTuple(DLResultBatch, "bbox_col", out cols);
+                HOperatorSet.GetDictTuple(DLResultBatch, "bbox_phi", out hv_phi);
                 HOperatorSet.AffineTransPoint2d(HomMat2D, rows, cols, out X, out Y);
 
+                // --------  CREATE CONNECTION STRING ---------
+                int maxCount = Math.Min(X.Length, 3);
+
+                StringBuilder message = new StringBuilder();
+                message.AppendFormat("{0};", maxCount);
+
+                double v = 0;
+                double w = 0;
+
+                for (int i = 0; i < maxCount; i++)
+                {
+                    if (i < hv_phi.Length)
+                    {
+                        v = 0 * Math.Sin(hv_phi[i].D * Math.PI / 180);
+                        w = 0 * Math.Cos(hv_phi[i].D * Math.PI / 180);
+                    }
+
+                    if (i < X.Length && i < Y.Length)
+                    {
+                        //z = 28 in this string.
+                        message.AppendFormat("{0:0.00}u{1:0.00}u{2:0.00}u28.00u{3:0.00}u{4:0.00}", 4*X[i].D, 5*Y[i].D, hv_phi[i].D, v, w);
+                    }
+
+                    if (i < maxCount - 1)
+                        message.Append(";");
+                }
+                message.AppendLine();
+                message.Replace(',', '.');
+
+                // -----------  SAVE PARAMETER  ---------------
                 containerIsFreeEvent.WaitOne();
                 resultDataMutex.WaitOne(); // CriticalSect.
                 resultData.timeNeeded = (1000 * (t2 - t1)); // CriticalSect.
@@ -406,7 +466,10 @@ namespace MultiThreading
                 mainForm.Invoke(delegateDisplay);
                 // Convert the lengths according to your image size
 
-
+                if (!ContinuousAcquisition)
+                {
+                    break;
+                }
                 if (delegatedStopEvent.WaitOne(0, true)) break;
             }
             // --------  RESET/CLOSE ALL HANDLES  ---------
@@ -436,12 +499,13 @@ namespace MultiThreading
         //////////////////////////////////////////////////////////////////////////////
         public void CommunicationRun()
         {
-            IPAddress ip = IPAddress.Parse("192.168.0.2");
-            int port = 5013;
+            Thread.Sleep(1000);
+            IPAddress ip = IPAddress.Parse(AdressIp);
+            int port = Port.FirstOrDefault();
 
             TcpClient client = new TcpClient();
             NetworkStream stream = null;
-            /*while (!cancellationTokenSource.Token.IsCancellationRequested)
+            while (!cancellationTokenSource.Token.IsCancellationRequested)
             {
                 try
                 {
@@ -462,11 +526,12 @@ namespace MultiThreading
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Une exception a été rencontrée: {ex.Message}");
-                    mainForm.Invoke(delegateControlReset);
+                    // Signal the other threads that a communication error has occurred
+                    communicationErrorEvent.Set();
                     break;
                 }
                 if (delegatedStopEvent.WaitOne(0, true)) break;
-            }*/
+            }
             stream?.Dispose();
             client?.Dispose();
             return;

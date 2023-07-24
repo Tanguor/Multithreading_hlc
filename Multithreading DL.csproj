@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>bin\Release\net6.0-windows\favicon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Release\net6.0-windows\favicon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MVTec.HalconDotNet-Windows" Version="23050.0.0" />
